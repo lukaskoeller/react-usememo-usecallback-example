@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useMemo } from 'react'
 
 export interface CardProps {
   heading: string
@@ -11,6 +11,17 @@ export interface CardProps {
 }
 
 const Card: FC<CardProps> = ({ heading, onMount, list }) => {
+  const memoizedList = useMemo(() => {
+    /**
+     * Instead of memoizing the array operation, we should
+     * memoize the actual most expensive calculation here -
+     * re-rendering and updating components.
+     */
+    return list.map((item) => (
+      <li key={item}>{item}</li>
+    ))
+  }, [list])
+
   useEffect(() => {
     onMount()
   })
@@ -21,11 +32,9 @@ const Card: FC<CardProps> = ({ heading, onMount, list }) => {
       <p>
         Re-rendering happens if:
         <ul>
-          {list.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
+          {memoizedList}
         </ul>
-        Okay, so Card won&apos;t because we follow:<br />
+        Okay, so Card won&apos;t re-render because we follow this rule:<br />
         <strong>
           <cite>Only when every single prop and the component itself are memoized, then re-renders can be prevented.</cite>
         </strong>
